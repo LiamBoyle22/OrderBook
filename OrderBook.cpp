@@ -5,6 +5,7 @@
 #include "OrderBook.h"
 #pragma once
 #include <cstdint>
+#include <vector>
 
 //sides this stays firm
 enum class Side: uint8_t
@@ -13,18 +14,38 @@ enum class Side: uint8_t
   Sell
 };
 
+enum class OrderType {
+  FillAndKill,
+  ExpiryOrder
+};
+
 //now we make our dependant values for our buy or sell side items
 using OrderId = uint64_t;
 using Price = int64_t;
 using Quantity = uint32_t;
 
 //now we initialise the order it self
-struct Order {
-  OrderId id;
-  Side side;
+struct LvInfo {
   Price price;
   Quantity quantity;
+};
 
-  Order (OrderId id, Side side, Price price, Quantity quantity)
-    : id(id), side(side), price(price), quantity(quantity) {}
+using LvInfoVec = std::vector<LvInfo>;
+
+class OrderBookLevels {
+public:
+  OrderBookLevels(const LvInfoVec& bids, const LvInfoVec& asks)
+    : bids {bids}, asks {asks}
+  {}
+
+  const LvInfoVec& GetBids() const { return bids; }
+  const LvInfoVec& GetAsks() const { return asks; }
+
+private:
+  LvInfoVec bids;
+  LvInfoVec asks;
+};
+
+int main() {
+
 };
