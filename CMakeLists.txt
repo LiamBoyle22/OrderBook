@@ -7,4 +7,5 @@ include_directories(.)
 
 add_executable(OrderBook
         OrderBook.cpp
-        OrderBook.h)
+        OrderBook.h
+        main.cpp)
