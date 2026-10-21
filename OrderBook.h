@@ -7,6 +7,10 @@
 #pragma once
 #include <vector>
 #include <cstdint>
+#include <list>
+#include <map>
+#include <unordered_map>
+#include <memory>
 #include <stdexcept>
 
 //sides this stays firm
@@ -15,6 +19,11 @@ enum class Side: uint8_t
     Buy,
     Sell
   };
+
+enum class OrderType2 {
+    Market,
+    Limit
+};
 
 enum class OrderType {
     FillAndKill,
@@ -50,14 +59,15 @@ private:
 
 class Order {
 public:
-    Order(OrderType type, OrderId id, Price price, Quantity quantity)
-        : type {type}, id {id}, side {side}, price {price}, InitialQuantity {quantity}, RemainingQuantity {quantity}
+    Order(OrderType type, OrderType2 type2, OrderId id, Side side, Price price, Quantity quantity)
+        : type {type}, type2 {type2}, id {id}, side {side}, price {price}, InitialQuantity {quantity}, RemainingQuantity {quantity}
     {}
 
     OrderId GetId() const {return id;}
     Side GetSide() const {return side;}
     Price GetPrice() const {return price;}
     OrderType GetType() const {return type;}
+    OrderType2 GetType2() const {return type2;}
     Quantity GetInitialQuantity() const {return InitialQuantity;}
     Quantity GetRemainingQuantity() const {return RemainingQuantity;}
     Quantity GetFilledQuantity() const {return InitialQuantity - RemainingQuantity;}
@@ -66,11 +76,12 @@ public:
     void Fill(Quantity quantity) {
         if (quantity > RemainingQuantity)
             throw std::logic_error {"Cannot fill order with less than its remaining quantity. "};
-        RemainingQuantity = quantity;
+        RemainingQuantity = quantity - InitialQuantity;
     }
 
 private:
     OrderType type;
+    OrderType2 type2;
     OrderId id;
     Side side;
     Price price;
@@ -78,5 +89,18 @@ private:
     Quantity RemainingQuantity;
 };
 
-using OrderPointer
+using OrderPointer = std::shared_ptr<Order>;
+using OrderPointers = std::list<OrderPointer>;
+
+class orderBook {
+public:
+    void Add(OrderPointer order);
+    void CancelOrder(OrderId id);
+    std::size_t Size() const { return orders.size();}
+private:
+    std::map<Price, OrderPointers, std::greater<Price>> bids;
+    std::map<Price, OrderPointers, std::less<Price>> asks;
+    std::unordered_map<OrderId, OrderPointer> orders;
+};
+
 #endif //ORDERBOOK_ORDERBOOK_H
