@@ -41,6 +41,15 @@ struct LvInfo {
     Quantity quantity;
 };
 
+struct Trade {
+    OrderId bidId;
+    OrderId askId;
+    Price price;
+    Quantity quantity;
+};
+
+using Trades = std::vector<Trade>;
+
 using LvInfoVec = std::vector<LvInfo>;
 
 class OrderBookLevels {
@@ -94,10 +103,12 @@ using OrderPointers = std::list<OrderPointer>;
 
 class OrderBook {
 public:
-    void AddOrder(OrderPointer order);
+    Trades AddOrder(OrderPointer order);
     void CancelOrder(OrderId id);
     std::size_t Size() const { return orders.size();}
 private:
+    Trades MatchOrders(OrderPointer incoming);
+
     std::map<Price, OrderPointers, std::greater<Price>> bids;
     std::map<Price, OrderPointers, std::less<Price>> asks;
     std::unordered_map<OrderId, OrderPointer> orders;
