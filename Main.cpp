@@ -6,7 +6,7 @@
 #include <iostream>
 
 int main() {
-    OrderBook book;
-    book.AddOrder(std::make_shared<Order>(OrderType::GoodTillCancel, 1, Side::Buy, 100, 10));
+    orderBook book;
+    book.AddOrder(std::make_shared<Order>(OrderType::GoodTillCancel, OrderType2::Limit, 1, Side::Buy, 100, 10));
     std::cout << book.Size() << "\n";
 }

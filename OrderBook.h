@@ -76,7 +76,7 @@ public:
     void Fill(Quantity quantity) {
         if (quantity > RemainingQuantity)
             throw std::logic_error {"Cannot fill order with less than its remaining quantity. "};
-        RemainingQuantity = quantity - InitialQuantity;
+        RemainingQuantity -= quantity;
     }
 
 private:
@@ -92,9 +92,9 @@ private:
 using OrderPointer = std::shared_ptr<Order>;
 using OrderPointers = std::list<OrderPointer>;
 
-class orderBook {
+class OrderBook {
 public:
-    void Add(OrderPointer order);
+    void AddOrder(OrderPointer order);
     void CancelOrder(OrderId id);
     std::size_t Size() const { return orders.size();}
 private:

@@ -14,6 +14,24 @@ void OrderBook::AddOrder(OrderPointer order) {
     orders[order->GetId()] = order;
 }
 
-void OrderBook::RemoveOrder(OrderPointer order) {
-        orders.erase(order->GetId());
+void OrderBook::CancelOrder(OrderId id) {
+    if (orders.count(id) == 0)
+        return;
+
+    OrderPointer order = orders[id];
+    Price price = order->GetPrice();
+
+    if (order->GetSide() == Side::Buy) {
+        bids[price].remove(order);
+        if (bids[price].empty())
+            bids.erase(price);
+    }
+
+    else {
+        asks[price].remove(order);
+        if (asks[price].empty())
+            asks.erase(price);
+    }
+
+    orders.erase(order->GetId());
 }
